@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="settings-panel glass-panel">
+    <div class="settings-header">
+        <div>
+            <p class="eyebrow">Admin Area</p>
+            <h2>Settings</h2>
+            <p>Kelola user, role akses, dan lab kalibrasi HEKSA Inventory.</p>
+        </div>
+    </div>
+
+    {% if message %}
+    <div class="settings-alert success">{{ message }}</div>
+    {% endif %}
+    {% if error %}
+    <div class="settings-alert error">{{ error }}</div>
+    {% endif %}
+
+    <nav class="settings-tabs" aria-label="Settings sections">
+        <a class="{{ 'is-active' if active_tab == 'users' else '' }}" href="/settings?tab=users">User Management</a>
+        <a class="{{ 'is-active' if active_tab == 'labs' else '' }}" href="/settings?tab=labs">Lab Management</a>
+    </nav>
+
+    {% if active_tab == 'users' %}
+    <div class="settings-section">
+        <div class="section-heading">
+            <h3>User Management</h3>
+        </div>
+
+        <details class="settings-form-card" open>
+            <summary>+ Tambah User</summary>
+            <form class="settings-form" method="post" action="/settings/users">
+                <label><span>Nama</span><input type="text" name="name" required></label>
+                <label><span>Username</span><input type="text" name="username" required></label>
+                <label><span>Password</span><input type="password" name="password" required></label>
+                <label><span>Confirm Password</span><input type="password" name="confirm_password" required></label>
+                <label>
+                    <span>Role</span>
+                    <select name="role" required>
+                        <option value="admin">ADMIN</option>
+                        <option value="user">USER</option>
+                    </select>
+                </label>
+                <label>
+                    <span>Status</span>
+                    <select name="status" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </label>
+                <div class="settings-form-actions">
+                    <button class="primary-button" type="submit">Simpan User</button>
+                </div>
+            </form>
+        </details>
+
+        <div class="table-scroll management-scroll">
+            <table class="equipment-table management-table settings-table">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in users %}
+                    <tr>
+                        <td><strong>{{ item["name"] }}</strong></td>
+                        <td>{{ item["username"] }}</td>
+                        <td><span class="role-badge">{{ item["role"]|role_label }}</span></td>
+                        <td><span class="status-pill {{ item['status'] }}">{{ item["status"]|capitalize }}</span></td>
+                        <td class="settings-actions-cell">
+                            <details class="settings-row-actions">
+                                <summary>Aksi</summary>
+                                <div class="settings-action-panel">
+                                    <form method="post" action="/settings/users/{{ item['id'] }}/edit" class="settings-mini-form">
+                                        <label><span>Nama</span><input type="text" name="name" value="{{ item['name'] }}" required></label>
+                                        <label><span>Username</span><input type="text" name="username" value="{{ item['username'] }}" required></label>
+                                        <label>
+                                            <span>Role</span>
+                                            <select name="role" required>
+                                                <option value="admin" {{ 'selected' if item['role']|role_label == 'ADMIN' else '' }}>ADMIN</option>
+                                                <option value="user" {{ 'selected' if item['role']|role_label == 'USER' else '' }}>USER</option>
+                                            </select>
+                                        </label>
+                                        <label>
+                                            <span>Status</span>
+                                            <select name="status" required>
+                                                <option value="active" {{ 'selected' if item['status'] == 'active' else '' }}>Active</option>
+                                                <option value="inactive" {{ 'selected' if item['status'] == 'inactive' else '' }}>Inactive</option>
+                                            </select>
+                                        </label>
+                                        <button class="outline-button" type="submit">Edit</button>
+                                    </form>
+
+                                    <form method="post" action="/settings/users/{{ item['id'] }}/password" class="settings-mini-form">
+                                        <label><span>Password Baru</span><input type="password" name="password" required></label>
+                                        <label><span>Confirm Password</span><input type="password" name="confirm_password" required></label>
+                                        <button class="outline-button" type="submit">Reset Password</button>
+                                    </form>
+
+                                    <form method="post" action="/settings/users/{{ item['id'] }}/toggle">
+                                        <button class="outline-button" type="submit">{{ 'Deactivate' if item['status'] == 'active' else 'Activate' }}</button>
+                                    </form>
+                                    <form method="post" action="/settings/users/{{ item['id'] }}/delete" onsubmit="return confirm('Hapus user ini jika aman?');">
+                                        <button class="danger-button" type="submit">Delete</button>
+                                    </form>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td class="empty-state" colspan="5">Belum ada user.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="settings-section">
+        <div class="section-heading">
+            <h3>Lab Management</h3>
+        </div>
+
+        <details class="settings-form-card" open>
+            <summary>+ Tambah Lab</summary>
+            <form class="settings-form lab-form" method="post" action="/settings/labs">
+                <label><span>Nama Lab</span><input type="text" name="lab_name" required></label>
+                <label>
+                    <span>Status</span>
+                    <select name="status" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </label>
+                <div class="settings-form-actions">
+                    <button class="primary-button" type="submit">Simpan Lab</button>
+                </div>
+            </form>
+        </details>
+
+        <div class="table-scroll management-scroll">
+            <table class="equipment-table management-table settings-table">
+                <thead>
+                    <tr>
+                        <th>Lab</th>
+                        <th>Status</th>
+                        <th>Dipakai Alat</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lab in labs %}
+                    <tr>
+                        <td><strong>{{ lab["lab_name"] }}</strong></td>
+                        <td><span class="status-pill {{ lab['status'] }}">{{ lab["status"]|capitalize }}</span></td>
+                        <td>{{ lab["equipment_count"] }}</td>
+                        <td class="settings-actions-cell">
+                            <details class="settings-row-actions">
+                                <summary>Aksi</summary>
+                                <div class="settings-action-panel">
+                                    <form method="post" action="/settings/labs/{{ lab['id'] }}/edit" class="settings-mini-form">
+                                        <label><span>Nama Lab</span><input type="text" name="lab_name" value="{{ lab['lab_name'] }}" required></label>
+                                        <label>
+                                            <span>Status</span>
+                                            <select name="status" required>
+                                                <option value="active" {{ 'selected' if lab['status'] == 'active' else '' }}>Active</option>
+                                                <option value="inactive" {{ 'selected' if lab['status'] == 'inactive' else '' }}>Inactive</option>
+                                            </select>
+                                        </label>
+                                        <button class="outline-button" type="submit">Rename / Update</button>
+                                    </form>
+                                    <form method="post" action="/settings/labs/{{ lab['id'] }}/toggle">
+                                        <button class="outline-button" type="submit">{{ 'Deactivate' if lab['status'] == 'active' else 'Activate' }}</button>
+                                    </form>
+                                    <form method="post" action="/settings/labs/{{ lab['id'] }}/delete" onsubmit="return confirm('Hapus lab ini jika belum digunakan?');">
+                                        <button class="danger-button" type="submit">Delete</button>
+                                    </form>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td class="empty-state" colspan="4">Belum ada lab.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

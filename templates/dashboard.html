@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="stats-grid" aria-label="Ringkasan inventaris">
+    <article class="stat-card">
+        <div class="stat-card-top">
+            <div class="stat-icon blue">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>
+            </div>
+        </div>
+        <p>Total Alat</p>
+        <strong>{{ stats.total }}</strong>
+        <span>Seluruh alat terdaftar</span>
+    </article>
+    <article class="stat-card">
+        <div class="stat-card-top">
+            <div class="stat-icon green">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+        </div>
+        <p>Aktif</p>
+        <strong>{{ stats.active }}</strong>
+        <span>Sertifikat masih aman</span>
+    </article>
+    <article class="stat-card">
+        <div class="stat-card-top">
+            <div class="stat-icon amber">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5"/><path d="M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+            </div>
+        </div>
+        <p>Sertifikat Akan Expired</p>
+        <strong>{{ stats.expiring }}</strong>
+        <span>Jatuh tempo dalam 30 hari</span>
+    </article>
+    <article class="stat-card">
+        <div class="stat-card-top">
+            <div class="stat-icon red">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </div>
+        </div>
+        <p>Sertifikat Expired</p>
+        <strong>{{ stats.expired }}</strong>
+        <span>Sertifikat sudah lewat tanggal</span>
+    </article>
+</section>
+
+<section class="dashboard-lower">
+    <article class="table-panel glass-panel">
+        <div class="panel-heading">
+            <div>
+                <p class="eyebrow">Inventaris</p>
+                <h2>Alat Terbaru</h2>
+            </div>
+            <a class="panel-link" href="/equipment">Lihat Semua</a>
+        </div>
+
+        <div class="table-scroll">
+            <table class="equipment-table">
+                <thead>
+                    <tr>
+                        <th>No Alat</th>
+                        <th>Nama Alat</th>
+                        <th>Lab</th>
+                        <th>Tanggal Input</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in recent_equipment %}
+                    <tr>
+                        <td>{{ item["equipment_no"] }}</td>
+                        <td>{{ item["equipment_name"] }}</td>
+                        <td>{{ item["lab_name"] or "-" }}</td>
+                        <td>{{ item["created_at"][:10] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td class="empty-state" colspan="4">Belum ada data alat.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="status-panel glass-panel">
+        <div class="panel-heading compact">
+            <div>
+                <p class="eyebrow">Sertifikat</p>
+                <h2>Status Sertifikat</h2>
+            </div>
+        </div>
+
+        <div class="status-visual">
+            <div
+                class="donut {{ 'no-data' if chart.status_total == 0 else '' }}"
+                style="--active-deg: {{ chart.active_degrees }}deg; --expiring-deg: {{ chart.expiring_degrees }}deg;"
+                aria-label="Ringkasan status sertifikat"
+            >
+                <div>
+                    <strong>{{ chart.status_total }}</strong>
+                    <span>Total</span>
+                </div>
+            </div>
+
+            <div class="status-legend">
+                <div><span class="dot green-dot"></span>Aktif <strong>{{ stats.active }}</strong></div>
+                <div><span class="dot amber-dot"></span>Akan Expired <strong>{{ stats.expiring }}</strong></div>
+                <div><span class="dot red-dot"></span>Expired <strong>{{ stats.expired }}</strong></div>
+            </div>
+        </div>
+    </article>
+</section>
+{% endblock %}

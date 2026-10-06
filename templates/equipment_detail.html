@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="detail-panel glass-panel">
+    <div class="detail-hero">
+        <div>
+            <p class="eyebrow">Detail Alat</p>
+            <div class="detail-title-row">
+                <h2>{{ equipment["equipment_name"] }}</h2>
+                <span class="status-badge {{ equipment['status'] }}">{{ equipment["status"]|status_label }}</span>
+            </div>
+            <p>{{ equipment["equipment_no"] }}</p>
+        </div>
+        <div class="detail-actions">
+            <a class="outline-button action-link" href="/equipment">Back to List</a>
+            <a class="primary-button action-link" href="/equipment/{{ equipment['id'] }}/edit">Edit</a>
+        </div>
+    </div>
+
+    <div class="detail-tabs" role="tablist" aria-label="Detail alat">
+        <button class="detail-tab is-active" type="button" role="tab" aria-selected="true" data-detail-tab="info">Informasi</button>
+        <button class="detail-tab" type="button" role="tab" aria-selected="false" data-detail-tab="history">Riwayat Aktivitas</button>
+    </div>
+
+    <div class="detail-tab-panel is-active" data-detail-panel="info">
+        <div class="detail-layout">
+            <div class="detail-main">
+                <section class="detail-section">
+                    <div class="section-heading">
+                        <h3>Informasi Alat</h3>
+                    </div>
+                    <div class="detail-grid">
+                        <div><span>No Alat</span><strong>{{ equipment["equipment_no"] }}</strong></div>
+                        <div><span>Nama Alat</span><strong>{{ equipment["equipment_name"] }}</strong></div>
+                        <div><span>No Sertifikat</span><strong>{{ equipment["certificate_no"] }}</strong></div>
+                        <div><span>Lab</span><strong>{{ equipment["lab_name"] or "-" }}</strong></div>
+                    </div>
+                    <div class="detail-spec">
+                        <span>Spesifikasi</span>
+                        <p>{{ equipment["specification"] }}</p>
+                    </div>
+                </section>
+
+                <section class="detail-section">
+                    <div class="section-heading">
+                        <h3>Kalibrasi</h3>
+                    </div>
+                    <div class="detail-grid">
+                        <div><span>Tanggal Kalibrasi</span><strong>{{ equipment["calibration_date"]|date_id }}</strong></div>
+                        <div><span>Masa Berlaku</span><strong>{{ equipment["expiry_date"]|date_id }}</strong></div>
+                        <div><span>Status</span><strong>{{ equipment["status"]|status_label }}</strong></div>
+                    </div>
+                </section>
+
+                <section class="detail-section">
+                    <div class="section-heading">
+                        <h3>Metadata</h3>
+                    </div>
+                    <div class="detail-grid">
+                        <div><span>Created by</span><strong>{{ equipment["created_by_name"] or "-" }}</strong></div>
+                        <div><span>Created at</span><strong>{{ equipment["created_at"]|datetime_id }}</strong></div>
+                        <div><span>Last updated</span><strong>{{ equipment["updated_at"]|datetime_id }}</strong></div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="barcode-card">
+                <div class="section-heading">
+                    <h3>Barcode</h3>
+                </div>
+                <div class="detail-barcode">
+                    <img src="/equipment/barcode/{{ equipment['barcode'] }}.png" alt="Barcode {{ equipment['barcode'] }}">
+                    <strong>{{ equipment["barcode"] }}</strong>
+                </div>
+                <div class="barcode-card-actions">
+                    <a class="outline-button action-link" href="/equipment/{{ equipment['id'] }}/barcode/print" target="_blank" rel="noopener">Print</a>
+                    <a class="primary-button action-link" href="/equipment/{{ equipment['id'] }}/barcode/download">Download</a>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div class="detail-tab-panel" data-detail-panel="history">
+        <section class="detail-section">
+            <div class="section-heading">
+                <h3>Riwayat Aktivitas</h3>
+            </div>
+            <div class="activity-list">
+                {% for activity in activity_items %}
+                <article class="activity-item">
+                    <div class="activity-dot {{ activity['action']|lower }}"></div>
+                    <div>
+                        <time>{{ activity["created_at"]|datetime_id }}</time>
+                        <h4>{{ activity["title"] }}</h4>
+                        {% for change in activity["changes"] %}
+                        <p>
+                            <span>{{ change["label"] }}</span>
+                            <strong>{{ change["old"] }}</strong>
+                            <em>&rarr;</em>
+                            <strong>{{ change["new"] }}</strong>
+                        </p>
+                        {% endfor %}
+                        <small>by {{ activity["user_name"] }}{% if activity["user_role"] %} - {{ activity["user_role"]|capitalize }}{% endif %}</small>
+                    </div>
+                </article>
+                {% else %}
+                <div class="empty-state">Belum ada riwayat aktivitas untuk alat ini.</div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}

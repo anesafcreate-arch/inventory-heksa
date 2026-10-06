@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="unauthorized-panel glass-panel">
+    <div class="unauthorized-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.4 8.7 8 9 4.6-.3 8-4 8-9V6z"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>
+    </div>
+    <div>
+        <p class="eyebrow">Akses Ditolak</p>
+        <h2>Halaman ini khusus Admin</h2>
+        <p>Silakan kembali ke dashboard atau hubungi admin jika membutuhkan akses Settings.</p>
+        <a class="primary-button action-link" href="/dashboard">Kembali ke Dashboard</a>
+    </div>
+</section>
+{% endblock %}

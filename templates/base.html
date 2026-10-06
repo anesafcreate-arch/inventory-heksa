@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title or "Dashboard" }} | HEKSA Inventory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', path='img/heksa-logo.png') }}?v=2">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+</head>
+<body class="app-body">
+    <div class="app-shell" data-app-shell>
+        <button class="sidebar-overlay" type="button" data-sidebar-close aria-label="Tutup menu"></button>
+
+        <aside class="sidebar glass-panel" id="sidebar">
+            <a class="brand" href="/dashboard" aria-label="HEKSA Inventory">
+                <img src="{{ url_for('static', path='img/heksa-logo.png') }}?v=2" alt="Heksa Instrumen Sinergi">
+            </a>
+
+            <nav class="side-nav" aria-label="Navigasi utama">
+                <a class="nav-item {{ 'active' if active_page == 'dashboard' else '' }}" href="/dashboard">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
+                    <span>Dashboard</span>
+                </a>
+                <a class="nav-item {{ 'active' if active_page == 'input' else '' }}" href="/equipment/new">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/><path d="M4 4h16v16H4z"/></svg>
+                    <span>Input Alat</span>
+                </a>
+                <a class="nav-item {{ 'active' if active_page == 'list' else '' }}" href="/equipment">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+                    <span>List Alat</span>
+                </a>
+                <a class="nav-item {{ 'active' if active_page == 'scan' else '' }}" href="/scan-barcode">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7V4h3"/><path d="M17 4h3v3"/><path d="M20 17v3h-3"/><path d="M7 20H4v-3"/><path d="M8 8h1v8H8z"/><path d="M12 8h1v8h-1z"/><path d="M16 8h1v8h-1z"/></svg>
+                    <span>Scan Barcode</span>
+                </a>
+            </nav>
+
+            <div class="side-bottom">
+                <a class="nav-item {{ 'active' if active_page == 'settings' else '' }}" href="/settings">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.05.05a2.2 2.2 0 0 1-3.11 3.11l-.05-.05a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.08 1.65V22a2.2 2.2 0 0 1-4.4 0v-.07A1.8 1.8 0 0 0 8.1 20.3a1.8 1.8 0 0 0-1.98.36l-.05.05a2.2 2.2 0 0 1-3.11-3.11l.05-.05A1.8 1.8 0 0 0 3.37 15a1.8 1.8 0 0 0-1.65-1.08H1.65a2.2 2.2 0 0 1 0-4.4h.07A1.8 1.8 0 0 0 3.37 8.1a1.8 1.8 0 0 0-.36-1.98l-.05-.05a2.2 2.2 0 0 1 3.11-3.11l.05.05A1.8 1.8 0 0 0 8.1 3.37a1.8 1.8 0 0 0 1.08-1.65V1.65a2.2 2.2 0 0 1 4.4 0v.07a1.8 1.8 0 0 0 1.08 1.65 1.8 1.8 0 0 0 1.98-.36l.05-.05a2.2 2.2 0 0 1 3.11 3.11l-.05.05A1.8 1.8 0 0 0 19.4 8.1a1.8 1.8 0 0 0 1.65 1.08h.07a2.2 2.2 0 0 1 0 4.4h-.07A1.8 1.8 0 0 0 19.4 15z"/></svg>
+                    <span>Settings</span>
+                </a>
+                <form method="post" action="/logout">
+                    <button class="nav-item nav-button" type="submit">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M15 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/></svg>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <header class="topbar glass-panel">
+                <div class="topbar-title">
+                    <button class="mobile-menu-button" type="button" data-sidebar-open aria-label="Buka menu" aria-controls="sidebar">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>
+                    </button>
+                    <div>
+                        <p class="eyebrow">HEKSA Inventory</p>
+                        <h1>{{ page_title or "Dashboard" }}</h1>
+                    </div>
+                </div>
+
+                <div class="topbar-actions">
+                    <label class="search-field">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg>
+                        <input type="search" placeholder="Cari alat, no alat, atau barcode..." aria-label="Cari alat">
+                    </label>
+                    <button class="icon-button notification-button" type="button" aria-label="Notifikasi">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+                        <span></span>
+                    </button>
+                    <div class="user-menu">
+                        <div class="avatar">{{ user["name"][:1] }}</div>
+                        <div>
+                            <strong>{{ user["name"] }}</strong>
+                            <span>{{ user["role"]|capitalize }}</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', path='js/app.js') }}?v=5"></script>
+</body>
+</html>

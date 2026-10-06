@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Barcode | {{ equipment["equipment_no"] }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+</head>
+<body class="print-body">
+    <main class="barcode-label-sheet">
+        <section class="barcode-print-card" aria-label="Label barcode">
+            <header>
+                <img src="{{ url_for('static', path='img/heksa-logo.png') }}?v=2" alt="Heksa Instrumen Sinergi">
+                <div>
+                    <strong>Heksa Instrumen Sinergi</strong>
+                    <span>Calibration Standard Equipment</span>
+                </div>
+            </header>
+            <div class="print-equipment">
+                <h1>{{ equipment["equipment_name"] }}</h1>
+                <p>{{ equipment["equipment_no"] }}{% if equipment["lab_name"] %} / {{ equipment["lab_name"] }}{% endif %}</p>
+            </div>
+            <div class="print-barcode">
+                <img src="/equipment/barcode/{{ equipment['barcode'] }}.png" alt="Barcode {{ equipment['barcode'] }}">
+                <strong>{{ equipment["barcode"] }}</strong>
+            </div>
+        </section>
+    </main>
+    <script>
+        window.addEventListener("load", () => window.print());
+    </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="scan-panel glass-panel">
+    <div class="scan-header">
+        <div>
+            <p class="eyebrow">Scan Barcode</p>
+            <h2>Scan Barcode</h2>
+            <p>Scan barcode alat untuk membuka informasi alat.</p>
+        </div>
+    </div>
+
+    <div class="scanner-layout">
+        <section class="scanner-card">
+            <div class="camera-shell" data-camera-shell>
+                <video data-scanner-video playsinline muted></video>
+                <div class="camera-placeholder" data-camera-placeholder>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7V4h3"/><path d="M17 4h3v3"/><path d="M20 17v3h-3"/><path d="M7 20H4v-3"/><path d="M8 8h1v8H8z"/><path d="M12 8h1v8h-1z"/><path d="M16 8h1v8h-1z"/></svg>
+                    <span>Kamera belum aktif</span>
+                </div>
+                <div class="scan-frame" aria-hidden="true"></div>
+            </div>
+
+            <div class="scanner-status" data-scanner-status role="status">
+                Tekan Start Camera untuk mulai memindai.
+            </div>
+
+            <div class="scanner-actions">
+                <button class="primary-button" type="button" data-scanner-start>Start Camera</button>
+                <button class="outline-button" type="button" data-scanner-stop disabled>Stop Camera</button>
+                <button class="outline-button" type="button" data-scanner-switch disabled>Switch Camera</button>
+            </div>
+        </section>
+
+        <aside class="manual-scan-card">
+            <p class="eyebrow">Manual</p>
+            <h3>Atau masukkan barcode secara manual</h3>
+            <form data-manual-barcode-form>
+                <label class="form-field">
+                    <span>Barcode</span>
+                    <input type="text" name="barcode" placeholder="HIS-CAL-000001" pattern="[A-Za-z0-9-]+" autocomplete="off" data-manual-barcode-input>
+                </label>
+                <button class="primary-button" type="submit">Cari Alat</button>
+            </form>
+            <p class="manual-help">Gunakan barcode yang tersimpan pada detail alat atau label barcode.</p>
+        </aside>
+    </div>
+</section>
+{% endblock %}

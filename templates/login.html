@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | HEKSA Inventory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', path='img/heksa-logo.png') }}?v=2">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+</head>
+<body class="login-body">
+    <main class="login-shell">
+        <section class="login-copy" aria-label="HEKSA Inventory">
+            <div class="orb orb-one"></div>
+            <div class="orb orb-two"></div>
+            <p>Manage<br>Your Calibration<br>Equipment<br>Easily</p>
+        </section>
+
+        <section class="login-card glass-card" aria-label="Login form">
+            <img class="login-logo" src="{{ url_for('static', path='img/heksa-logo.png') }}?v=2" alt="Heksa Instrumen Sinergi">
+            <h1>Selamat Datang</h1>
+            <p class="login-subtitle">Calibration Equipment Inventory System</p>
+
+            {% if error %}
+            <div class="alert" role="alert">{{ error }}</div>
+            {% endif %}
+
+            <form method="post" action="/login" class="login-form">
+                <label class="field">
+                    <span>Username</span>
+                    <input
+                        type="text"
+                        name="username"
+                        value="{{ username or '' }}"
+                        autocomplete="username"
+                        placeholder="Username"
+                        required
+                    >
+                </label>
+
+                <label class="field password-field">
+                    <span>Password</span>
+                    <input
+                        id="password"
+                        type="password"
+                        name="password"
+                        autocomplete="current-password"
+                        placeholder="Password"
+                        required
+                    >
+                    <button class="toggle-password" type="button" data-toggle-password aria-label="Tampilkan password">Show</button>
+                </label>
+
+                <button class="primary-button" type="submit">Login</button>
+            </form>
+
+            <footer class="login-footer">&copy; 2026 Heksa Instrumen Sinergi</footer>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', path='js/app.js') }}"></script>
+</body>
+</html>

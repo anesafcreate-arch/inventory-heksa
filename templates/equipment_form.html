@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="form-panel glass-panel">
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">{{ form_eyebrow }}</p>
+            <h2>Informasi Alat</h2>
+        </div>
+    </div>
+
+    <form class="equipment-form" method="post" action="{{ form_action }}" novalidate>
+        <label class="form-field">
+            <span>No Alat <b>*</b></span>
+            <input type="text" name="equipment_no" value="{{ form.equipment_no }}" required>
+            {% if errors.equipment_no %}<small class="field-error">{{ errors.equipment_no }}</small>{% endif %}
+        </label>
+
+        <label class="form-field">
+            <span>Lab <b>*</b></span>
+            <select name="lab_id" required>
+                <option value="">Pilih lab</option>
+                {% for lab in labs %}
+                <option value="{{ lab['id'] }}" {{ 'selected' if form.lab_id|string == lab['id']|string else '' }}>{{ lab["lab_name"] }}</option>
+                {% endfor %}
+            </select>
+            {% if errors.lab_id %}<small class="field-error">{{ errors.lab_id }}</small>{% endif %}
+        </label>
+
+        <label class="form-field">
+            <span>Nama Alat <b>*</b></span>
+            <input type="text" name="equipment_name" value="{{ form.equipment_name }}" required>
+            {% if errors.equipment_name %}<small class="field-error">{{ errors.equipment_name }}</small>{% endif %}
+        </label>
+
+        <label class="form-field">
+            <span>Tanggal Kalibrasi</span>
+            <input type="date" name="calibration_date" value="{{ form.calibration_date }}">
+            {% if errors.calibration_date %}<small class="field-error">{{ errors.calibration_date }}</small>{% endif %}
+        </label>
+
+        <label class="form-field">
+            <span>No Sertifikat <b>*</b></span>
+            <input type="text" name="certificate_no" value="{{ form.certificate_no }}" required>
+            {% if errors.certificate_no %}<small class="field-error">{{ errors.certificate_no }}</small>{% endif %}
+        </label>
+
+        <label class="form-field">
+            <span>Masa Berlaku / Expired Date</span>
+            <input type="date" name="expiry_date" value="{{ form.expiry_date }}">
+            {% if errors.expiry_date %}<small class="field-error">{{ errors.expiry_date }}</small>{% endif %}
+        </label>
+
+        <label class="form-field full-row">
+            <span>Spesifikasi Alat <b>*</b></span>
+            <textarea name="specification" maxlength="500" rows="5" data-character-counter required>{{ form.specification }}</textarea>
+            <small class="counter"><span data-counter-value>{{ form.specification|length }}</span>/500</small>
+            {% if errors.specification %}<small class="field-error">{{ errors.specification }}</small>{% endif %}
+        </label>
+
+        <div class="form-field barcode-field">
+            <label for="barcode">Barcode <b>*</b></label>
+            <div class="barcode-input-row">
+                <input id="barcode" type="text" name="barcode" value="{{ form.barcode }}" pattern="[A-Za-z0-9-]+" required data-barcode-input>
+                <button class="outline-button" type="button" data-generate-barcode>Generate</button>
+            </div>
+            <small class="help-text">Gunakan huruf, angka, dan tanda hubung.</small>
+            {% if errors.barcode %}<small class="field-error">{{ errors.barcode }}</small>{% endif %}
+            <div class="barcode-live-preview" data-barcode-live-preview hidden>
+                <img alt="Barcode preview">
+            </div>
+        </div>
+
+        <div class="form-actions full-row">
+            <a class="secondary-button action-link" href="{{ cancel_url }}">Cancel</a>
+            <button class="primary-button" type="submit">{{ submit_label }}</button>
+        </div>
+    </form>
+</section>
+
+{% if success_equipment %}
+<div class="modal-backdrop is-visible" data-success-modal>
+    <section class="success-modal glass-panel" role="dialog" aria-modal="true" aria-labelledby="success-title">
+        <div class="success-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <p class="eyebrow">Data tersimpan</p>
+        <h2 id="success-title">{{ success_equipment["equipment_name"] }}</h2>
+        <p class="success-subtitle">{{ success_equipment["equipment_no"] }}</p>
+        <div class="saved-barcode">
+            <img src="/equipment/barcode/{{ success_equipment['barcode'] }}.png" alt="Barcode {{ success_equipment['barcode'] }}">
+            <strong>{{ success_equipment["barcode"] }}</strong>
+        </div>
+        <div class="modal-actions">
+            <a class="outline-button" href="/equipment/{{ success_equipment['id'] }}/barcode/print" target="_blank">Print Barcode</a>
+            <a class="outline-button" href="/equipment/{{ success_equipment['id'] }}/barcode/download">Download Barcode</a>
+            <a class="primary-button action-link" href="/equipment/{{ success_equipment['id'] }}/detail">View Detail</a>
+        </div>
+        <a class="modal-close" href="/equipment/new" aria-label="Tutup">&times;</a>
+    </section>
+</div>
+{% endif %}
+{% endblock %}

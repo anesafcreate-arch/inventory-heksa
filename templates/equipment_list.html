@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="list-panel glass-panel">
+    <div class="list-header">
+        <div>
+            <p class="eyebrow">Manajemen Inventaris</p>
+            <h2>List Alat</h2>
+            <p>Daftar seluruh alat standar kalibrasi di Heksa Instrumen Sinergi</p>
+        </div>
+        <a class="primary-button action-link" href="/equipment/new">+ Input Alat</a>
+    </div>
+
+    <form class="list-toolbar" method="get" action="/equipment">
+        <label class="list-search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg>
+            <input type="search" name="q" value="{{ filters.q }}" placeholder="Cari no alat, nama, sertifikat, barcode, lab...">
+        </label>
+
+        <details class="filter-dropdown">
+            <summary>Filter</summary>
+            <div class="filter-panel">
+                <label>
+                    <span>Lab</span>
+                    <select name="lab_id">
+                        <option value="">Semua Lab</option>
+                        {% for lab in labs %}
+                        <option value="{{ lab['id'] }}" {{ 'selected' if filters.lab_id|string == lab['id']|string else '' }}>{{ lab["lab_name"] }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    <span>Status</span>
+                    <select name="status">
+                        <option value="">Semua Status</option>
+                        <option value="active" {{ 'selected' if filters.status_filter == 'active' else '' }}>Active</option>
+                        <option value="expiring_soon" {{ 'selected' if filters.status_filter == 'expiring_soon' else '' }}>Expiring Soon</option>
+                        <option value="expired" {{ 'selected' if filters.status_filter == 'expired' else '' }}>Expired</option>
+                    </select>
+                </label>
+                <label>
+                    <span>Tanggal Kalibrasi</span>
+                    <input type="date" name="calibration_date" value="{{ filters.calibration_date }}">
+                </label>
+                <label>
+                    <span>Expired Date</span>
+                    <input type="date" name="expiry_date" value="{{ filters.expiry_date }}">
+                </label>
+                <div class="filter-actions">
+                    <a class="secondary-button action-link" href="{{ clear_url }}">Reset</a>
+                    <button class="primary-button" type="submit">Terapkan</button>
+                </div>
+            </div>
+        </details>
+
+        <button class="outline-button" type="submit">Cari</button>
+    </form>
+
+    <div class="table-scroll management-scroll">
+        <table class="equipment-table management-table">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" aria-label="Pilih semua"></th>
+                    <th>No Alat</th>
+                    <th>Nama Alat</th>
+                    <th>Lab</th>
+                    <th>No Sertifikat</th>
+                    <th>Spesifikasi</th>
+                    <th>Masa Berlaku</th>
+                    <th>Barcode</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in equipment_rows %}
+                <tr>
+                    <td><input type="checkbox" aria-label="Pilih {{ item['equipment_no'] }}"></td>
+                    <td><strong>{{ item["equipment_no"] }}</strong></td>
+                    <td>{{ item["equipment_name"] }}</td>
+                    <td>{{ item["lab_name"] or "-" }}</td>
+                    <td>{{ item["certificate_no"] }}</td>
+                    <td class="truncate-cell" title="{{ item['specification'] }}">{{ item["specification"] }}</td>
+                    <td>{{ item["expiry_date"] or "-" }}</td>
+                    <td><code>{{ item["barcode"] }}</code></td>
+                    <td><span class="status-badge {{ item['status'] }}">{{ item["status"]|status_label }}</span></td>
+                    <td class="action-cell">
+                        <button
+                            class="row-action-button"
+                            type="button"
+                            aria-label="Aksi {{ item['equipment_no'] }}"
+                            aria-expanded="false"
+                            data-action-menu-button
+                            data-equipment-id="{{ item['id'] }}"
+                            data-equipment-name="{{ item['equipment_name'] }}"
+                            data-equipment-no="{{ item['equipment_no'] }}"
+                            data-detail-url="/equipment/{{ item['id'] }}/detail"
+                            data-edit-url="/equipment/{{ item['id'] }}/edit"
+                            data-print-url="/equipment/{{ item['id'] }}/barcode/print"
+                            data-download-url="/equipment/{{ item['id'] }}/barcode/download"
+                        >...</button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td class="empty-state" colspan="10">Belum ada data alat yang cocok.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination-bar">
+        <p>Menampilkan {{ equipment_rows|length }} dari {{ total_records }} data</p>
+        <nav class="pagination" aria-label="Pagination">
+            <a class="{{ 'disabled' if page <= 1 else '' }}" href="{{ page_url(page - 1) if page > 1 else '#' }}">Prev</a>
+            {% for page_number in page_numbers %}
+            <a class="{{ 'active' if page_number == page else '' }}" href="{{ page_url(page_number) }}">{{ page_number }}</a>
+            {% endfor %}
+            <a class="{{ 'disabled' if page >= total_pages else '' }}" href="{{ page_url(page + 1) if page < total_pages else '#' }}">Next</a>
+        </nav>
+    </div>
+</section>
+
+<div class="row-menu" data-action-menu hidden>
+    <a data-action-detail href="#">Lihat Detail</a>
+    <a data-action-edit href="#">Edit</a>
+    <a data-action-print href="#" target="_blank" rel="noopener">Print Barcode</a>
+    <a data-action-download href="#">Download Barcode</a>
+    {% if is_admin %}
+    <button type="button" data-action-delete>Hapus</button>
+    {% endif %}
+</div>
+
+<div class="modal-backdrop" data-delete-modal>
+    <section class="confirm-modal glass-panel" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+        <p class="eyebrow">Konfirmasi Hapus</p>
+        <h2 id="delete-title">Hapus data alat?</h2>
+        <p>Data <strong data-delete-label></strong> akan dihapus dari daftar alat.</p>
+        <form method="post" data-delete-form>
+            <div class="modal-actions">
+                <button class="secondary-button" type="button" data-delete-close>Cancel</button>
+                <button class="danger-button" type="submit">Hapus</button>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}
